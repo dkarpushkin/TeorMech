@@ -7,30 +7,30 @@ namespace Physics
 {
     class SimpleGravity : IForce
     {
-        public const double DEFAULT_GRAV_CONSTANT = 9.0;
+        public const double DEFAULT_GRAV_CONSTANT = 9.8;
 
-        protected double grav_constant;
-        protected Vector direction;
-        protected Vector magnitude;
+        protected double _grav_constant;
+        protected Vector _direction;
+        protected Vector _magnitude;
 
         public SimpleGravity()
         {
-            double[] dir = { 0, 0, -1 };
-            this.grav_constant = DEFAULT_GRAV_CONSTANT;
-            this.direction = (Vector)Vector.Build.DenseOfArray(dir);
-            this.magnitude = (Vector)(this.direction * this.grav_constant);
+            double[] dir = { 0, -1, 0 };
+            this._grav_constant = DEFAULT_GRAV_CONSTANT;
+            this._direction = (Vector)Vector.Build.DenseOfArray(dir);
+            this._magnitude = (Vector)(this._direction * this._grav_constant);
         }
 
         public SimpleGravity(double gravConstant, Vector direction=null)
         {
-            this.grav_constant = gravConstant;
-            this.direction = (Vector)Vector.Build.DenseOfVector(direction).Normalize(2);
-            this.magnitude = (Vector)(this.direction * this.grav_constant);
+            this._grav_constant = gravConstant;
+            this._direction = (Vector)Vector.Build.DenseOfVector(direction).Normalize(2);
+            this._magnitude = (Vector)(this._direction * this._grav_constant);
         }
 
         public Vector apply(double dt, RigidBody body)
         {
-            return this.magnitude;
+            return (Vector)(_magnitude * body.Mass);
         }
 
         public bool isActive()

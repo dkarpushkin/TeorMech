@@ -30,7 +30,8 @@ namespace Physics
         {
             Vector distance = (Vector)(Position - body.Position);
 
-
+            throw new NotImplementedException();
+            return null;
         }
 
         public override Collision checkCollisionWith(PlaneBody body)

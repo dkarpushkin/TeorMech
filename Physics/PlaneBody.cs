@@ -78,7 +78,7 @@ namespace Physics
                 Vector startPoint = (Vector)(body.Position - Normal);
                 Vector endPoint = (Vector)(body.Position - Normal * dist);
 
-                return new Collision(startPoint, endPoint, normal);
+                return new Collision(startPoint, endPoint, normal, this, body);
             }
             else
                 return null;
