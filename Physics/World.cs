@@ -33,7 +33,7 @@ namespace Physics
 
         public void update(double dt)
         {
-            _detectCollisions();
+            //_detectCollisions();
 
             foreach (RigidBody body in _bodies)
             {
