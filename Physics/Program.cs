@@ -24,28 +24,29 @@ namespace Physics
             //    double.PositiveInfinity,
             //    0, 0, 0,
             //    0, 0, 1);
+            //world.addBody(ground);
             SphereBody body = new SphereBody(
                 1,
                 0, 0, 100,
                 0, 0, 0);
-            //world.addBody(ground);
             world.addBody(body);
             world.addGlobalForce(new SimpleGravity());
+
             //double[] v = { 0, 0, 10 };
             //body.applyForce(new TemporalForce((Vector)Vector.Build.DenseOfArray(v), 1.0));
 
-            Console.WriteLine("Введите скорость");
+            Console.Write("Tell me the magnitude of the initial velocity:  ");
             double vel_scalar;
             while (! double.TryParse(Console.ReadLine(), out vel_scalar))
             {
-                Console.WriteLine("Должно быть число с плавающей точкой");
+                Console.Write("I need a floating point number:  ");
             }
 
-            Console.WriteLine("Введите угол к оси X");
+            Console.Write("Tell me its angle to the X axis:  ");
             double angle;
             while (!double.TryParse(Console.ReadLine(), out angle))
             {
-                Console.WriteLine("Должно быть число с плавающей точкой");
+                Console.Write("I need a floating point number:  ");
             }
 
             double tan = Math.Tan(angle * Math.PI / 180);
