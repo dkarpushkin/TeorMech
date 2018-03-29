@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Physics
 {
-    class SphereBody : RigidBody
+    public class SphereBody : RigidBody
     {
         public readonly RigidBodyType BODY_TYPE = RigidBodyType.Sphere;
 
@@ -19,24 +19,21 @@ namespace Physics
 
         public SphereBody(double mass, double x, double y, double z, double vx, double vy, double vz)
         {
-            _mass = mass;
+            Mass = mass;
             double[] pos = { x, y, z };
             double[] vel = { vx, vy, vz };
             _position = (Vector)(Vector.Build.DenseOfArray(pos));
             _velocity = (Vector)(Vector.Build.DenseOfArray(vel));
         }
 
-        public override Collision checkCollisionWith(SphereBody body)
+        public Collision checkCollisionWith(SphereBody body)
         {
-            Vector distance = (Vector)(Position - body.Position);
 
-            throw new NotImplementedException();
-            return null;
         }
 
-        public override Collision checkCollisionWith(PlaneBody body)
+        public Collision checkCollisionWith(PlaneBody body)
         {
-            throw new NotImplementedException();
+
         }
     }
 }

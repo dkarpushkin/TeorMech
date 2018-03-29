@@ -30,7 +30,10 @@ namespace Physics
 
         public Vector apply(double dt, RigidBody body)
         {
-            return (Vector)(_magnitude * body.Mass);
+            if (body.isStatic())
+                return (Vector)(Vector.Build.Dense(3, 0.0));
+
+            return (Vector)(_magnitude / body.InverceMass);
         }
 
         public bool isActive()

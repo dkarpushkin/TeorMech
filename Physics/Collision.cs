@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Physics
 {
-    class Collision
+    public class Collision
     {
         Vector _startPoint;
         Vector _endPoint;
@@ -27,7 +27,7 @@ namespace Physics
         public Vector StartPoint { get => _startPoint; set => _startPoint = (Vector)(Vector.Build.DenseOfVector(value)); }
         public Vector EndPoint { get => _endPoint; set => _endPoint = (Vector)(Vector.Build.DenseOfVector(value)); }
         public Vector Normal { get => _normal; set => _normal = (Vector)(Vector.Build.DenseOfVector(value)); }
-        internal RigidBody Body1 { get => _body1; set => _body1 = value; }
-        internal RigidBody Body2 { get => _body2; set => _body2 = value; }
+        public RigidBody Body1 { get => _body1; set => _body1 = value; }
+        public RigidBody Body2 { get => _body2; set => _body2 = value; }
     }
 }

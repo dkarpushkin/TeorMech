@@ -18,6 +18,7 @@ namespace Physics
         public void addBody(RigidBody body)
         {
             _bodies.Add(body);
+            
             _applyGlobalForces(body);
         }
 
@@ -25,10 +26,7 @@ namespace Physics
         {
             _globalForces.Add(force);
 
-            foreach (RigidBody body in _bodies)
-            {
-                body.applyForce(force);
-            }
+            _applyGlobalForce(force);
         }
 
         public void update(double dt)

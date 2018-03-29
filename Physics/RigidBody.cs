@@ -4,25 +4,29 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Physics
 {
-    enum RigidBodyType
+    public enum RigidBodyType
     {
         None,
         Sphere,
         Plane,
     }
 
-    abstract class RigidBody
+    public abstract class RigidBody
     {
         public readonly RigidBodyType BODY_TYPE = RigidBodyType.None;
 
-        protected double _mass;
+        protected double _inverceMass;
         protected Vector _position;
         protected Vector _velocity;
 
-        protected ICollection<IForce> _effectiveForces;
+        protected ICollection<IForce> _effectiveForces = new HashSet<IForce>();
 
 
-        protected RigidBody() { }
+        protected RigidBody()
+        {
+            _position = (Vector) (Vector.Build.Dense(3));
+            _velocity = (Vector) (Vector.Build.Dense(3));
+        }
 
         protected RigidBody(double mass, Vector position, Vector velocity = null)
         {
@@ -32,7 +36,7 @@ namespace Physics
 
             if (velocity == null)
             {
-                double[] vel = { 0, 0, 0 };
+                double[] vel = {0, 0, 0};
             }
 
             Velocity = velocity;
@@ -46,56 +50,78 @@ namespace Physics
         {
             Mass = mass;
 
-            double[] pos = { x, y, z };
-            double[] vel = { vx, vy, vz };
+            double[] pos = {x, y, z};
+            double[] vel = {vx, vy, vz};
 
-            Position = (Vector)(Vector.Build.DenseOfArray(pos));
-            Velocity = (Vector)(Vector.Build.DenseOfArray(vel));
-            
+            Position = (Vector) (Vector.Build.DenseOfArray(pos));
+            Velocity = (Vector) (Vector.Build.DenseOfArray(vel));
+
             _effectiveForces = new HashSet<IForce>();
         }
-        
+
+        public double InverceMass
+        {
+            get => _inverceMass;
+            set => _inverceMass = value;
+        }
+
         public double Mass
         {
-            get { return _mass; }
-            set
-            {
-                if (value == 0)
-                    throw new ArgumentException("Mass must not be 0");
-
-                _mass = value;
-            }
+            get => 1 / _inverceMass;
+            set => _inverceMass = (value != 0) ? 1 / value : double.PositiveInfinity;
         }
 
         public virtual Vector Position
         {
-            get { return _position; }
-            set
-            {
-                _position = (Vector)(Vector.Build.DenseOfVector(value));
-            }
+            get => _position;
+            set { _position = (Vector) (Vector.Build.DenseOfVector(value)); }
         }
 
-        public double X { get => _position[0]; set => _position[0] = value; }
-        public double Y { get => _position[1]; set => _position[1] = value; }
-        public double Z { get => _position[2]; set => _position[2] = value; }
+        public double X
+        {
+            get => _position[0];
+            set => _position[0] = value;
+        }
+
+        public double Y
+        {
+            get => _position[1];
+            set => _position[1] = value;
+        }
+
+        public double Z
+        {
+            get => _position[2];
+            set => _position[2] = value;
+        }
 
         public Vector Velocity
         {
-            get { return _velocity; }
-            set
-            {
-                _velocity = (Vector)(Vector.Build.DenseOfVector(value));
-            }
+            get => _velocity;
+            set { _velocity = (Vector) (Vector.Build.DenseOfVector(value)); }
         }
 
-        public double Vx { get => _velocity[0]; set => _velocity[0] = value; }
-        public double Vy { get => _velocity[1]; set => _velocity[1] = value; }
-        public double Vz { get => _velocity[2]; set => _velocity[2] = value; }
+        public double Vx
+        {
+            get => _velocity[0];
+            set => _velocity[0] = value;
+        }
+
+        public double Vy
+        {
+            get => _velocity[1];
+            set => _velocity[1] = value;
+        }
+
+        public double Vz
+        {
+            get => _velocity[2];
+            set => _velocity[2] = value;
+        }
 
         public bool isStatic()
         {
-            return double.IsPositiveInfinity(Mass);
+            return InverceMass == 0;
         }
 
         public virtual bool applyForce(IForce force)
@@ -122,27 +148,28 @@ namespace Physics
 
             _removeUnacktiveForces();
         }
-        
-        
+
         protected void _applyResultant(Vector resultantForce, double dt)
         {
-            Vector accel = (Vector)(resultantForce / _mass);
-            Vector halfVel = (Vector)(accel * (dt / 2));
-            _velocity = (Vector)(_velocity + halfVel);
-            _position = (Vector)(_position + _velocity * dt);
-            _velocity = (Vector)(_velocity + halfVel);
-            //_position = (Vector)(_position + (_velocity + accel * dt / 2) * dt);
-            //_velocity = (Vector)(_velocity + accel * (dt / 2));
+            Vector accel = (Vector) (resultantForce * _inverceMass);
+
+            Vector halfVel = (Vector) (accel * dt * 0.5);
+            _velocity = (Vector) (_velocity + halfVel);
+            _position = (Vector) (_position + _velocity * dt);
+            _velocity = (Vector) (_velocity + halfVel);
+
+            //_position = (Vector)(_position + (_velocity + accel * dt * 0.5) * dt);
+            //_velocity = (Vector)(_velocity + accel * dt * 0.5);
         }
 
         protected Vector _calculateResulantForce(double dt)
         {
-            double[] zero = { 0, 0, 0 };
-            Vector result = (Vector)Vector.Build.DenseOfArray(zero);
+            double[] zero = {0, 0, 0};
+            Vector result = (Vector) Vector.Build.DenseOfArray(zero);
 
             foreach (IForce force in _effectiveForces)
             {
-                result = (Vector)(result + force.apply(dt, this));
+                result = (Vector) (result + force.apply(dt, this));
             }
 
             return result;
@@ -156,27 +183,5 @@ namespace Physics
                     _effectiveForces.Remove(force);
             }
         }
-        
-
-
-        public virtual Collision checkCollisioin(RigidBody otherBody)
-        {
-            switch (otherBody.BODY_TYPE)
-            {
-                case RigidBodyType.Sphere:
-                    return checkCollisionWith((SphereBody)otherBody);
-                    break;
-                case RigidBodyType.Plane:
-                    return checkCollisionWith((PlaneBody)otherBody);
-                    break;
-                default:
-                    return null;
-                    break;
-            }
-        }
-
-        public abstract Collision checkCollisionWith(SphereBody body);
-
-        public abstract Collision checkCollisionWith(PlaneBody body);
     }
 }

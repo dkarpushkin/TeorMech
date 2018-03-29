@@ -6,8 +6,20 @@ namespace Physics
 {
     class Program
     {
-        static void outputBodyData(StreamWriter stream, double time, RigidBody body)
+        static void outputBodyData(StreamWriter stream, double time, RigidBody body, bool firstTime = false)
         {
+            if (firstTime)
+            {
+                stream.WriteLine(string.Format(
+                    "{0,6}{1,10}{2,10}{3,10}{4,10}{5,10}{6,10}",
+                    "Time", "X", "Y", "Z", "Vx", "Vy", "Vz")
+                );
+                Console.WriteLine(string.Format(
+                    "{0,6}{1,10}{2,10}{3,10}{4,10}{5,10}{6,10}",
+                    "Time", "X", "Y", "Z", "Vx", "Vy", "Vz")
+                );
+            }
+
             string format = "{0,6:0.00}{1,10:0.00}{2,10:0.00}{3,10:0.00}{4,10:0.00}{5,10:0.00}{6,10:0.00}";
             stream.WriteLine(string.Format(
                 format,
@@ -17,19 +29,21 @@ namespace Physics
                 time, body.X, body.Y, body.Z, body.Vx, body.Vy, body.Vz));
         }
 
-        static void Main(string[] args)
+        static void practice1()
         {
             World world = new World();
-            //PlaneBody ground = new PlaneBody(
-            //    double.PositiveInfinity,
-            //    0, 0, 0,
-            //    0, 0, 1);
-            //world.addBody(ground);
+
+//            PlaneBody ground = new PlaneBody(
+//                double.PositiveInfinity,
+//                0, 0, 0,
+//                0, 0, 1);
+//            world.addBody(ground);
             SphereBody body = new SphereBody(
                 1,
                 0, 0, 100,
                 0, 0, 0);
             world.addBody(body);
+
             world.addGlobalForce(new SimpleGravity());
 
             //double[] v = { 0, 0, 10 };
@@ -37,7 +51,7 @@ namespace Physics
 
             Console.Write("Tell me the magnitude of the initial velocity:  ");
             double vel_scalar;
-            while (! double.TryParse(Console.ReadLine(), out vel_scalar))
+            while (!double.TryParse(Console.ReadLine(), out vel_scalar))
             {
                 Console.Write("I need a floating point number:  ");
             }
@@ -50,26 +64,29 @@ namespace Physics
             }
 
             double tan = Math.Tan(angle * Math.PI / 180);
-            double[] vel = { 1, tan, 0 };
-            Vector velocity = (Vector)(Vector.Build.DenseOfArray(vel).Normalize(2) * vel_scalar);
+            double[] vel = {1, tan, 0};
+            Vector velocity = (Vector) (Vector.Build.DenseOfArray(vel).Normalize(2) * vel_scalar);
             body.Velocity = velocity;
 
+            StreamWriter outputStream = new StreamWriter("./output.txt");
+            outputBodyData(outputStream, 0.0, body, true);
 
             double iterationStep = 0.1;
             double iterationFrame = 10;
-            StreamWriter outputStream = new StreamWriter("./output.txt");
-            outputStream.WriteLine(string.Format(
-                "{0,6}{1,10}{2,10}{3,10}{4,10}{5,10}{6,10}",
-                "Time", "X", "Y", "Z", "Vx", "Vy", "Vz")
-                );
-
             for (double t = 0; t < iterationFrame; t += iterationStep)
             {
-                outputBodyData(outputStream, t, body);
                 world.update(iterationStep);
+                outputBodyData(outputStream, t, body);
             }
 
             outputStream.Close();
+
+            return;
+        }
+
+        static void Main(string[] args)
+        {
+            practice1();
 
             return;
         }

@@ -5,12 +5,12 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace Physics
 {
-    class PlaneBody : RigidBody
+    public class PlaneBody : RigidBody
     {
         public readonly RigidBodyType BODY_TYPE = RigidBodyType.Plane;
 
-        Vector _normal; //  3-х мерный вектор: {A, B, C}
-        double _anchor; //  D
+        protected Vector _normal; //  3-х мерный вектор: {A, B, C}
+        protected double _anchor; //  D
 
         public Vector Normal
         {
